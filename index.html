@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOKYO PACK 行程規劃</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#faf8f4;
+  --surface:#ffffff;
+  --surface-2:#f1ede4;
+  --border:#ddd5c6;
+  --ink:#241f18;
+  --ink-2:#5c5342;
+  --ink-3:#8a8070;
+  --accent:#b5502e;
+  --accent-ink:#ffffff;
+  --accent-soft:#f3ddd2;
+  --good:#4c7a52;
+  --good-soft:#dfe9de;
+  --bad:#b23b3b;
+  --bad-soft:#f3dcdc;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1b1812;
+    --surface:#26221b;
+    --surface-2:#302b22;
+    --border:#453e30;
+    --ink:#f3ede1;
+    --ink-2:#c9bfab;
+    --ink-3:#948a76;
+    --accent:#e08659;
+    --accent-ink:#241209;
+    --accent-soft:#3a2a20;
+    --good:#7fbf88;
+    --good-soft:#28352a;
+    --bad:#e08080;
+    --bad-soft:#3a2424;
+  }
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Noto Sans TC","Hiragino Sans","PingFang TC",system-ui,sans-serif;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px;display:flex;flex-direction:column;gap:20px;}
+
+/* ---- top nav ---- */
+.topnav{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  padding-block:10px;padding-inline:16px;
+  border-bottom:1px solid var(--border);
+}
+.topnav-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:8px;}
+.brand{display:flex;flex-direction:column;gap:2px;}
+.brand .kicker{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;}
+.brand h1{font-family:"Noto Serif TC",serif;font-size:clamp(18px,4vw,22px);margin:0;}
+.pagetabs{display:flex;gap:6px;flex-wrap:wrap;}
+.pagetab{
+  appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--ink-2);
+  padding:8px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.pagetab .num{
+  width:18px;height:18px;border-radius:100%;background:var(--surface-2);color:var(--ink-3);
+  display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none;
+}
+.pagetab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);}
+.pagetab[aria-selected="true"] .num{background:var(--accent);color:var(--accent-ink);}
+
+.page-panel{display:none;flex-direction:column;gap:18px;}
+.page-panel[data-active="true"]{display:flex;}
+
+header.page{display:flex;flex-direction:column;gap:4px;}
+header.page .kicker{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;}
+header.page h2{font-family:"Noto Serif TC",serif;font-size:clamp(20px,4.5vw,26px);margin:0;}
+header.page p{margin:0;color:var(--ink-2);font-size:13.5px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;}
+.card h3{font-size:15px;margin:0 0 8px;font-family:"Noto Serif TC",serif;}
+.meta{font-size:12px;color:var(--ink-3);}
+
+.notebox{background:var(--good-soft);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--ink-2);}
+.notebox strong{color:var(--ink);}
+.notebox.warn{background:var(--bad-soft);}
+.notebox.warn strong{color:var(--bad);}
+
+/* ---------------- PAGE 1: hotel compare ---------------- */
+.hotel-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:720px){.hotel-grid{grid-template-columns:repeat(3,1fr);}}
+.hotel-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;
+  display:flex;flex-direction:column;gap:10px;position:relative;
+}
+.hotel-card.best{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.hotel-card .plan-badge{
+  align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.04em;
+  color:var(--accent-ink);background:var(--accent);padding:3px 10px;border-radius:100px;
+}
+.hotel-card.sold-out{opacity:.55;}
+.hotel-card h4{margin:0;font-size:16px;font-family:"Noto Serif TC",serif;line-height:1.35;}
+.hotel-card .area{font-size:12px;color:var(--ink-3);}
+.price-block{display:flex;align-items:baseline;gap:6px;margin-top:2px;}
+.price-block .amt{font-size:24px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;}
+.price-block .unit{font-size:12px;color:var(--ink-3);}
+.price-note{font-size:11.5px;color:var(--ink-3);margin-top:-6px;}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{
+  font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:100px;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.tag.good{background:var(--good-soft);color:var(--good);}
+.tag.bad{background:var(--bad-soft);color:var(--bad);}
+.tag.neutral{background:var(--surface-2);color:var(--ink-2);}
+.detail-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+.detail-chip{
+  font-size:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);
+  overflow:hidden;
+}
+.detail-chip summary{
+  list-style:none;cursor:pointer;padding:6px 10px;color:var(--ink-2);font-weight:600;
+  display:flex;align-items:center;gap:4px;white-space:normal;word-break:break-word;
+}
+.detail-chip summary::-webkit-details-marker{display:none;}
+.detail-chip summary::before{content:"+";color:var(--accent);font-weight:800;flex:none;}
+.detail-chip[open] summary::before{content:"−";}
+.detail-chip[open] summary{color:var(--ink);border-bottom:1px solid var(--border);}
+.detail-chip-body{padding:8px 10px;font-size:12px;color:var(--ink-2);line-height:1.5;word-break:break-word;}
+.map-link-btn{
+  margin-top:auto;display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:12.5px;font-weight:700;color:var(--accent);border:1px solid var(--accent);
+  border-radius:10px;padding:8px 10px;text-decoration:none;
+}
+.map-link-btn:hover{background:var(--accent-soft);}
+.map-link-btn svg{width:15px;height:15px;flex:none;}
+.sold-out-strip{
+  font-size:12px;font-weight:800;color:var(--bad);background:var(--bad-soft);
+  padding:6px 10px;border-radius:8px;text-align:center;
+}
+
+/* ---------------- PAGE 2: route map ---------------- */
+.hotel-toggle{display:flex;gap:8px;flex-wrap:wrap;}
+.hotel-btn{
+  appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--ink-2);
+  padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;flex:1;min-width:160px;text-align:left;
+  font-family:inherit;
+}
+.hotel-btn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);}
+.hotel-btn .sub{display:block;font-size:11.5px;color:var(--ink-3);font-weight:400;margin-top:2px;}
+.hotel-btn[aria-pressed="true"] .sub{color:var(--ink-2);}
+
+.daytabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.daytab{
+  appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--ink-2);
+  padding:8px 13px;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;cursor:pointer;
+  border-bottom:none;position:relative;top:1px;font-family:inherit;
+}
+.daytab[aria-selected="true"]{color:var(--ink);background:var(--surface);box-shadow:0 -2px 0 var(--accent) inset;}
+
+.route-split{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:760px){.route-split{grid-template-columns:1.05fr 0.95fr;align-items:start;}}
+.map-col{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface);}
+.map-col iframe{width:100%;height:300px;border:0;display:block;}
+.map-caption{padding:9px 14px;font-size:12px;color:var(--ink-2);background:var(--surface-2);display:flex;justify-content:space-between;align-items:center;gap:8px 14px;flex-wrap:wrap;}
+.map-caption span{flex:1;min-width:0;word-break:break-word;}
+.map-caption a{color:var(--accent);font-weight:700;text-decoration:none;white-space:nowrap;}
+.map-caption a:hover{text-decoration:underline;}
+
+.info-col{display:flex;flex-direction:column;gap:12px;}
+.day-heading{display:flex;flex-direction:column;gap:2px;}
+.day-heading h3{margin:0;font-size:17px;font-family:"Noto Serif TC",serif;}
+.day-heading .sub{font-size:12.5px;color:var(--ink-3);}
+.fixed-badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+  color:var(--accent-ink);background:var(--accent);padding:3px 9px;border-radius:100px;align-self:flex-start;
+}
+
+.route-list{display:flex;flex-direction:column;gap:0;}
+.rstop{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border);cursor:pointer;}
+.rstop:first-child{border-top:none;}
+.rstop:hover{background:var(--surface-2);margin-inline:-10px;padding-inline:10px;border-radius:10px;}
+.rstop.active{background:var(--accent-soft);margin-inline:-10px;padding-inline:10px;border-radius:10px;}
+.rstop .idx{
+  width:24px;height:24px;border-radius:100%;background:var(--surface-2);color:var(--ink-2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none;margin-top:1px;
+}
+.rstop.active .idx{background:var(--accent);color:var(--accent-ink);}
+.rstop .rbody{flex:1;min-width:0;}
+.rstop .rrow1{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline;}
+.rstop .rname{font-weight:700;font-size:13.5px;}
+.rstop .rtime{font-size:11.5px;color:var(--accent);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.rstop .rnote{font-size:12.5px;color:var(--ink-2);margin-top:2px;}
+.rstop .rhours{font-size:11px;color:var(--ink-3);margin-top:2px;}
+
+.transit-chip{
+  display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-3);
+  padding:6px 0 6px 34px;
+}
+.transit-chip svg{width:14px;height:14px;flex:none;color:var(--ink-3);margin-top:1px;}
+.transit-chip span{flex:1;min-width:0;}
+.transit-chip b{color:var(--ink-2);font-weight:700;white-space:normal;}
+
+/* ---------------- PAGE 3: transit + prep ---------------- */
+.transit-table{width:100%;border-collapse:collapse;font-size:13px;}
+.transit-table th,.transit-table td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
+.transit-table th{color:var(--ink-3);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;}
+.transit-table td.num{font-variant-numeric:tabular-nums;white-space:nowrap;}
+.transit-table .planbadge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:100px;background:var(--accent-soft);color:var(--accent);display:inline-block;}
+.tblwrap{overflow-x:auto;}
+.tbl-hint{font-size:11px;color:var(--ink-3);margin:-4px 0 2px;}
+@media(min-width:640px){.tbl-hint{display:none;}}
+
+.prep-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:720px){.prep-grid{grid-template-columns:repeat(2,1fr);}}
+.prep-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.prep-card .phead{display:flex;align-items:center;gap:8px;}
+.prep-icon{
+  width:32px;height:32px;border-radius:10px;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;flex:none;
+}
+.prep-icon svg{width:17px;height:17px;}
+.prep-card h4{margin:0;font-size:14.5px;font-family:"Noto Serif TC",serif;}
+.prep-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.prep-list li{font-size:13px;color:var(--ink-2);display:flex;gap:7px;}
+.prep-list li::before{content:"✓";color:var(--good);font-weight:800;flex:none;}
+.prep-list li>span{flex:1;min-width:0;word-break:break-word;}
+.prep-list strong{color:var(--ink);white-space:normal;}
+
+/* ---------------- PAGE 4: work assignment (simple) ---------------- */
+.work-grid-simple{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:720px){.work-grid-simple{grid-template-columns:repeat(3,1fr);}}
+.person-card-simple{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;
+  display:flex;flex-direction:column;gap:10px;align-items:flex-start;
+}
+.avatar{
+  width:34px;height:34px;border-radius:100%;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none;
+}
+.person-card-simple h4{margin:0;font-size:16px;font-family:"Noto Serif TC",serif;}
+.kw-row{display:flex;flex-wrap:wrap;gap:6px;}
+.kw{font-size:12px;font-weight:600;padding:4px 10px;border-radius:100px;background:var(--surface-2);color:var(--ink-2);}
+
+footer.note{font-size:12px;color:var(--ink-3);text-align:center;padding-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-inner">
+    <div class="brand">
+      <span class="kicker">TOKYO PACK 2026 · 東京出差</span>
+      <h1>10/13 – 10/17 行程規劃</h1>
+    </div>
+    <div class="pagetabs" id="pageTabs" role="tablist"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="pagePanels"></div>
+  <footer class="note">此頁為草稿 HTML 檔案，僅供你自己開啟參考；飯店房價與可訂性請以下單當下頁面為準。</footer>
+</div>
+
+<script>
+(function(){
+
+/* =========================================================
+   PAGE 1 DATA — 飯店比較（Agoda 即時比價，3房3人4晚，含稅前）
+   ========================================================= */
+var HOTELS = [
+  {
+    id:"kawasaki",
+    plan:"選項一",
+    name:"APA飯店TKP京急川崎站前",
+    area:"川崎市 · 京急川崎站前一帶",
+    mapUrl:"https://maps.google.com/?cid=15839000524464935517",
+    price:2567,
+    priceNote:"每房每晚（不含稅），單人房可吸菸",
+    soldOut:false,
+    breakfast:{status:"addon", label:"早餐為加購（非房價內含）", detail:"每房每人 NT$283 加購，加總後每晚約 NT$2,850，加購方式需於訂房流程內另外勾選"},
+    freeCancel:true,
+    tags:[["3人3房皆可訂","good"],["早餐僅加購","bad"],["免費取消","good"]],
+    details:[
+      {label:"距 Big Sight 較遠", detail:"距 Big Sight 較遠，需轉乘電車 41–58 分（1–2 次轉乘）"},
+      {label:"4 種房型已售罄", detail:"此住宿當下已有 4 種房型售罄，剩餘房型多為單人房（最多住 1 人／房），3 房剛好對應 3 人"},
+      {label:"生活機能完整", detail:"京急川崎站生活機能完整、藥妝與餐飲選擇多，適合早出晚歸"},
+      {label:"非同站直通 JR", detail:"距 JR 川崎站需步行轉乘，非同一站直通"}
+    ]
+  },
+  {
+    id:"musashikosugi",
+    plan:"選項二",
+    name:"Super Hotel Premier Musashi Kosugi-Ekimae",
+    area:"川崎市 · 武藏小杉站前",
+    mapUrl:"https://maps.google.com/?cid=2239596350334511357",
+    price:2304,
+    priceNote:"每房每晚（不含稅）／含早餐選項另計",
+    soldOut:false,
+    breakfast:{status:"available", label:"有獨立「附早餐」房型可選", detail:"篩選「附早餐」後最低 NT$2,451／晚（不含稅），為正式房價非加購，仍在預算內"},
+    freeCancel:true,
+    tags:[["有含早餐房型","good"],["評價 8.4 很讚","good"],["免費取消","good"]],
+    details:[
+      {label:"轉乘大站，選擇多", detail:"武藏小杉為轉乘大站，往 Big Sight／東京都心選擇多，但實測仍需 1–2 次轉乘"},
+      {label:"評價全場最高", detail:"評價分數全場最高（8.4／整潔度 9.0）"},
+      {label:"有溫泉澡堂設施", detail:"有溫泉澡堂等設施，適合展覽奔波後放鬆"},
+      {label:"與選項一同側可替代", detail:"與選項一京急川崎屬同側（川崎方向），可視房況與選項一互相替代"}
+    ]
+  },
+  {
+    id:"ojima",
+    plan:"選項三",
+    name:"APA飯店 - 東京大島",
+    area:"江東區 · 都營新宿線大島站",
+    mapUrl:"https://maps.google.com/?cid=267957216251915441",
+    price:2461,
+    priceNote:"每房每晚（不含稅），單人房禁菸",
+    soldOut:false,
+    breakfast:{status:"none", label:"無早餐選項", detail:"檢視所有房型卡片與篩選條件，皆無「附早餐」相關選項或標示，Agoda 上此住宿目前不提供早餐加購"},
+    freeCancel:true,
+    tags:[["前往 Big Sight 最快","good"],["3人3房皆可訂","good"],["無早餐可選","bad"]],
+    details:[
+      {label:"距 Big Sight 最近", detail:"距 Big Sight 最近：直達巴士約 31 分鐘、0 轉乘（選項一需 41–58 分＋1–2 次轉乘）"},
+      {label:"往返市區也較快", detail:"10/16 市區行程（表參道／澀谷／深川）往返也普遍比選項一快 15–20 分鐘"},
+      {label:"周邊生活圈較偏", detail:"江東區大島周邊較偏生活圈，晚上店家選擇比川崎、武藏小杉少"},
+      {label:"評價略低於川崎方向", detail:"評價 7.8，整體滿意度略低於川崎方向兩間"}
+    ]
+  }
+];
+
+/* =========================================================
+   PAGE 2 DATA — 行程景點 + 交通備註
+   ========================================================= */
+var DAYS = [
+  {
+    id:"d1013", label:"10/13", title:"抵達日", sub:"視航班時間彈性安排，不強排景點", fixed:false,
+    stops:[
+      {id:"arrive", name:"抵達東京・前往飯店 Check-in", note:"", hours:"", time:"", lat:null, lng:null, mapUrl:"", mapLabel:""}
+    ]
+  },
+  {
+    id:"d1014", label:"10/14", title:"展覽第 1 天（全天）", sub:"固定行程，全天在 Big Sight", fixed:true,
+    stops:[
+      {id:"expo1", name:"TOKYO PACK 2026 — Tokyo Big Sight 東展館", note:"預估全天約 8 小時看展", hours:"每日 10:00–17:00", time:"10:00–17:00", lat:35.6316964, lng:139.797634, mapUrl:"https://maps.google.com/?cid=5565232454649693191", mapLabel:"Tokyo Big Sight 東展館"}
+    ],
+    transitFromHotel:{
+      A:{mode:"電車", time:"41–58 分", transfer:"1–2 次轉乘"},
+      B:{mode:"直達巴士", time:"約 31 分", transfer:"0 轉乘"}
+    }
+  },
+  {
+    id:"d1015", label:"10/15", title:"展覽第 2 天（半天）＋市區行程", sub:"上午展覽，下午轉往築地／銀座", fixed:false,
+    stops:[
+      {id:"expo2", name:"TOKYO PACK 2026 — Tokyo Big Sight 東展館", note:"預估半天，午後結束轉往市區", hours:"每日 10:00–17:00", time:"10:00–約13:00", lat:35.6316964, lng:139.797634, mapUrl:"https://maps.google.com/?cid=5565232454649693191", mapLabel:"Tokyo Big Sight 東展館"},
+      {id:"tsukiji", name:"築地場外市場", note:"許多店家週三／週日公休，建議挑非公休日", hours:"約 09:00–14:00，多店週三或週日休", time:"午後", lat:35.6647703, lng:139.7702515, mapUrl:"https://maps.google.com/?cid=11704332758705177180", mapLabel:"築地場外市場",
+        transitIn:{mode:"電車：りんかい線＋有樂町線", time:"約 20 分", transfer:"1 次轉乘（新木場）"}},
+      {id:"muji", name:"無印良品 銀座旗艦店", note:"逛完築地後順路往銀座方向", hours:"11:00–21:00 每日營業", time:"傍晚", lat:35.673214, lng:139.7653677, mapUrl:"https://maps.google.com/?cid=771702428473144825", mapLabel:"無印良品 銀座旗艦店",
+        transitIn:{mode:"步行", time:"約 11 分", transfer:"不需搭車"}},
+      {id:"2121", name:"21_21 DESIGN SIGHT", note:"現正展出「方丈記に学ぶ」特展；週二休館", hours:"10:00–19:00，週二休", time:"傍晚", lat:35.6675248, lng:139.7305214, mapUrl:"https://maps.google.com/?cid=18351375368394313434", mapLabel:"21_21 DESIGN SIGHT",
+        transitIn:{mode:"電車：日比谷線至六本木站，步行5分", time:"約 15 分", transfer:"0 轉乘＋步行5分"}}
+    ],
+    transitFromHotel:{
+      A:{mode:"電車", time:"41–58 分", transfer:"1–2 次轉乘（往 Big Sight）"},
+      B:{mode:"直達巴士", time:"約 31 分", transfer:"0 轉乘（往 Big Sight）"}
+    },
+    transitToHotel:{
+      A:{mode:"電車：銀座→京急川崎", time:"約 34 分", transfer:"1 次轉乘"},
+      B:{mode:"電車：銀座→大島", time:"約 26–37 分", transfer:"1 次轉乘"}
+    }
+  },
+  {
+    id:"d1016", label:"10/16", title:"市區行程日（展覽已結束）", sub:"表參道 → 澀谷 → 深川，可選延伸大井町", fixed:false,
+    stops:[
+      {id:"hay", name:"HAY TOKYO", note:"表參道 GYRE B1F，營業時間不固定會臨時公休", hours:"11:00–20:00（不定休）", time:"上午／中午", lat:35.6673795, lng:139.7069057, mapUrl:"https://maps.google.com/?cid=8443511931467584158", mapLabel:"HAY TOKYO",
+        transitIn:{mode:"電車（自飯店出發，見下方交通表）", time:"", transfer:""}},
+      {id:"ikea", name:"IKEA 澀谷店", note:"市區型店面，逛家具與居家用品", hours:"每日 10:00–21:00", time:"中午／下午", lat:35.660502, lng:139.6998329, mapUrl:"https://maps.google.com/?cid=6716890216571569568", mapLabel:"IKEA 澀谷店",
+        transitIn:{mode:"步行或電車1站", time:"約 5–25 分", transfer:"步行可達，不一定需搭車"}},
+      {id:"kohnan", name:"Kohnan 好安（江東深川店・示意）", note:"依當天路線選最順路的分店即可", hours:"依分店而異", time:"下午", lat:35.6778287, lng:139.795726, mapUrl:"https://maps.google.com/?cid=12804302289036793592", mapLabel:"Kohnan 江東深川店（示意）",
+        transitIn:{mode:"電車：東西線（木場↔日本橋轉乘銀座線）", time:"約 33 分", transfer:"1 次轉乘"}},
+      {id:"labi", name:"Yamada Denki LABI 大井町店", note:"大型家電賣場，近大井町站", hours:"約 10:00–21:00", time:"下午／傍晚", lat:35.6060802, lng:139.7356064, mapUrl:"https://maps.google.com/?cid=4930671332272247689", mapLabel:"Yamada Denki LABI 大井町店",
+        transitIn:{mode:"電車：JR埼京線直通りんかい線（自澀谷）", time:"最快 10 分", transfer:"0 轉乘"}}
+    ],
+    transitFromHotel:{
+      A:{mode:"電車：川崎→表參道", time:"約 46–53 分", transfer:"1 次轉乘"},
+      B:{mode:"電車：大島→表參道", time:"約 34 分", transfer:"1 次轉乘"}
+    },
+    transitToHotel:{
+      A:{mode:"電車：木場→京急川崎", time:"約 40 分", transfer:"2 次轉乘"},
+      B:{mode:"電車：木場→大島", time:"約 23–36 分", transfer:"1–2 次轉乘"}
+    }
+  },
+  {
+    id:"d1017", label:"10/17", title:"回程日", sub:"視航班時間彈性安排，不強排景點", fixed:false,
+    stops:[
+      {id:"depart", name:"退房・前往機場", note:"", hours:"", time:"", lat:null, lng:null, mapUrl:"", mapLabel:""}
+    ]
+  }
+];
+
+var HOTEL = {
+  A:{ lat:35.5330516, lng:139.7020707, mapUrl:"https://maps.google.com/?cid=15839000524464935517", label:"APA Hotel TKP 京急川崎駅前", sub:"靠 Big Sight 西邊" },
+  B:{ lat:35.688981,  lng:139.8213489, mapUrl:"https://maps.google.com/?cid=267957216251915441",  label:"APA Hotel 東京大島", sub:"靠 Big Sight 北邊" }
+};
+
+var GMAPS_API_KEY = "AIzaSyBoB1QkfGlrZDjG6kpoycoMaqeXcj1t6Xg";
+
+/* =========================================================
+   PAGE 3 DATA — 交通總表 + 行前準備
+   ========================================================= */
+var TRANSIT_ROWS = [
+  {seg:"飯店 → Big Sight（10/14、10/15、10/16 往返展場）", A:"41–58 分・1–2 次轉乘", B:"31 分・直達巴士・0 轉乘"},
+  {seg:"Big Sight → 築地場外市場", A:"約 20 分・1 次轉乘（電車，りんかい線＋有樂町線）", B:"同左（與飯店無關，展場出發）"},
+  {seg:"築地場外市場 → 無印良品銀座旗艦店", A:"約 11 分・步行", B:"同左"},
+  {seg:"銀座 → 21_21 DESIGN SIGHT", A:"約 15 分・電車 10 分＋步行 5 分", B:"同左"},
+  {seg:"銀座 → 飯店（10/15 晚上）", A:"約 34 分・1 次轉乘", B:"約 26–37 分・1 次轉乘"},
+  {seg:"飯店 → 表參道 HAY TOKYO（10/16）", A:"約 46–53 分・1 次轉乘", B:"約 34 分・1 次轉乘"},
+  {seg:"HAY TOKYO → IKEA 澀谷店", A:"步行或電車1站，約 5–25 分", B:"同左"},
+  {seg:"IKEA 澀谷 → Kohnan 深川店", A:"約 33 分・1 次轉乘（東西線）", B:"同左"},
+  {seg:"IKEA 澀谷 → LABI 大井町", A:"最快 10 分・0 轉乘", B:"同左"},
+  {seg:"Kohnan 深川 → 飯店（10/16 晚上）", A:"約 40 分・2 次轉乘", B:"約 23–36 分・1–2 次轉乘"}
+];
+
+var PREP = [
+  {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>',
+    title:"必裝 App",
+    items:[
+      "<strong>Google 地圖</strong>：離線地圖建議先下載東京都區部＋川崎／大島周邊",
+      "<strong>Suica／PASMO（行動裝置版）</strong>：iPhone 可直接在錢包 App 加卡，Android 需 Google Wallet 支援機種確認",
+      "<strong>乗換案内 或 Yahoo!乗換案内</strong>：查詢即時電車班次與月台號碼比 Google 地圖更準",
+      "<strong>Agoda／訂房 App</strong>：預先截圖訂房確認信，飯店端偶爾網路不穩"
+    ]
+  },
+  {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+    title:"事前申請／購買",
+    items:[
+      "<strong>IC 交通卡</strong>：實體 Suica/PASMO 卡近年偶有限量供應，建議確認手機能否綁定電子版以防買不到實體卡",
+      "<strong>網卡或 eSIM</strong>：出發前線上購買，抵達機場即可啟用，勿等到入境才現場排隊買",
+      "<strong>TOKYO PACK 2026 觀展證／邀請函</strong>：先上官網完成登錄列印或存手機備用，現場改列印排隊較久",
+      "<strong>飯店訂房確認與早餐加購</strong>：川崎方案的早餐需在訂房流程中另外勾選加購，出發前務必再次確認是否已加購成功"
+    ]
+  },
+  {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+    title:"交通常識提醒",
+    items:[
+      "日本電車<strong>尖峰時段（約7:30–9:00）</strong>非常擁擠，建議展覽日避開此時段出發或提早出門",
+      "<strong>計程車較貴</strong>：起跳約 500 日圓，短程移動電車幾乎都比計程車划算，深夜或行李多、多人分攤時計程車才划算",
+      "轉乘時<strong>月台常需走一段路或換樓層</strong>，尤其新木場、大手町等轉乘大站，抓寬裕時間",
+      "IC 卡儲值機多為<strong>現金或當地銀聯卡</strong>，建議隨身帶足零錢與小額紙鈔以備儲值"
+    ]
+  },
+  {
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l18-9-9 18-2-7-7-2z"/></svg>',
+    title:"展場相關提醒",
+    items:[
+      "Big Sight 展期間<strong>周邊飲食排隊人潮多</strong>，可考慮提早或錯開整點用餐",
+      "東展館／西展館<strong>面積大</strong>，建議下載會場平面圖，並約定好集合地點與時間",
+      "名片、名片夾<strong>務必準備足量</strong>，現場交換頻率高",
+      "展場<strong>Wi-Fi 訊號可能不穩</strong>，重要聯繫建議走行動網路"
+    ]
+  }
+];
+
+/* =========================================================
+   PAGE 4 DATA — 分工提案（簡化版）
+   ========================================================= */
+var WORK = [
+  {who:"負責人 1", topic:"紙箱結構設計", kws:["折疊結構","鎖扣封口","強度減量","多用途包裝"]},
+  {who:"負責人 2", topic:"材質選用", kws:["瓦楞芯材","替代／減塑材料","印刷相容性","單一材質化"]},
+  {who:"負責人 3", topic:"ESG 議題", kws:["永續認證","碳足跡揭露","循環經濟","法規動向"]}
+];
+
+/* =========================================================
+   RENDER HELPERS
+   ========================================================= */
+var currentPage = 1;
+var currentHotel = "A";
+var currentDayId = "d1014";
+var currentStopId = null;
+
+function el(tag, cls, html){
+  var e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html != null) e.innerHTML = html;
+  return e;
+}
+
+function breakfastTag(b){
+  if(b.status==="available") return ["有含早餐房型","good"];
+  if(b.status==="addon") return ["早餐僅加購","bad"];
+  if(b.status==="none") return ["無早餐可選","bad"];
+  return ["早餐狀況未知","neutral"];
+}
+
+/* ---------- PAGE 1 ---------- */
+function renderPage1(){
+  var wrap = el("div","page-panel");
+  wrap.id = "panel-1";
+
+  var head = el("header","page",
+    '<span class="kicker">Step 1 · 住宿方案</span><h2>飯店比較</h2>' +
+    '<p>3 房 3 人 4 晚（10/13 入・10/17 退）。價格為 Agoda 即時比價之每房每晚不含稅金額，實際訂房請以下單當下頁面為準。</p>');
+  wrap.appendChild(head);
+
+  var grid = el("div","hotel-grid");
+  HOTELS.forEach(function(h){
+    var card = el("div","hotel-card" + (h.id==="ojima" || h.id==="kawasaki" ? " best":"") + (h.soldOut?" sold-out":""));
+
+    var badge = el("span","plan-badge", h.plan);
+    card.appendChild(badge);
+
+    card.appendChild(el("h4",null,h.name));
+    card.appendChild(el("div","area",h.area));
+
+    if(h.soldOut){
+      card.appendChild(el("div","sold-out-strip","目前所選日期・房數已無空房"));
+    } else {
+      var pb = el("div","price-block", '<span class="amt">NT$'+h.price.toLocaleString()+'</span><span class="unit">/房/晚</span>');
+      card.appendChild(pb);
+      card.appendChild(el("div","price-note",h.priceNote));
+    }
+
+    var tagRow = el("div","tag-row");
+    h.tags.forEach(function(t){
+      tagRow.appendChild(el("span","tag "+t[1], t[0]));
+    });
+    card.appendChild(tagRow);
+
+    if(h.breakfast && h.breakfast.detail){
+      var bf = el("div","meta", "<strong style=\"color:var(--ink)\">早餐：</strong>"+h.breakfast.label+"。"+h.breakfast.detail);
+      card.appendChild(bf);
+    }
+
+    var chipWrap = el("div","detail-chip-row");
+    h.details.forEach(function(d){
+      var dt = document.createElement("details");
+      dt.className = "detail-chip";
+      var sum = document.createElement("summary");
+      sum.innerHTML = d.label;
+      dt.appendChild(sum);
+      var body = el("div","detail-chip-body", d.detail);
+      dt.appendChild(body);
+      chipWrap.appendChild(dt);
+    });
+    card.appendChild(chipWrap);
+
+    if(h.mapUrl){
+      var mapBtn = document.createElement("a");
+      mapBtn.className = "map-link-btn";
+      mapBtn.href = h.mapUrl;
+      mapBtn.target = "_blank";
+      mapBtn.rel = "noopener";
+      mapBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>在 Google 地圖開啟</span>';
+      card.appendChild(mapBtn);
+    }
+
+    grid.appendChild(card);
+  });
+  wrap.appendChild(grid);
+
+  wrap.appendChild(el("div","notebox",
+    "<strong>確定的：</strong>以上價格、早餐狀況、免費取消條件皆為實際進入 Agoda 各飯店客房選擇頁面逐一查證後的結果（非僅列表頁概略價）。" +
+    "<strong>推測的：</strong>結帳時是否會另外加上住宿稅／消費稅未實際點入付款頁確認，金額若有增加預期僅為數十至百元台幣層級。"));
+
+  return wrap;
+}
+
+/* ---------- PAGE 2 ---------- */
+function findStopById(id){
+  for(var i=0;i<DAYS.length;i++){
+    for(var j=0;j<DAYS[i].stops.length;j++){
+      if(DAYS[i].stops[j].id===id) return DAYS[i].stops[j];
+    }
+  }
+  return null;
+}
+
+// 建立 Google Maps Embed API 的 iframe 網址。
+// - 有 activeStop：聚焦單一景點（place 模式）
+// - 無 activeStop 且當天有 >=1 個有座標的停留站：畫出「飯店 → 各站依序 → 飯店」的完整路線（directions 模式）
+// - 當天完全沒有座標（抵達日／回程日）：退回顯示飯店位置（place 模式）
+function buildMapEmbedSrc(day, hotel, activeStop){
+  var base = "https://www.google.com/maps/embed/v1/";
+  if(activeStop && activeStop.lat!=null){
+    return base+"place?key="+GMAPS_API_KEY+"&q="+activeStop.lat+","+activeStop.lng+"&zoom=16";
+  }
+  var validStops = (day.stops||[]).filter(function(s){ return s.lat!=null; });
+  if(validStops.length===0){
+    return base+"place?key="+GMAPS_API_KEY+"&q="+hotel.lat+","+hotel.lng+"&zoom=15";
+  }
+  if(validStops.length===1){
+    // 只有一站：畫「飯店 → 該站 → 飯店」來回路線
+    var only = validStops[0];
+    return base+"directions?key="+GMAPS_API_KEY+
+      "&origin="+hotel.lat+","+hotel.lng+
+      "&destination="+hotel.lat+","+hotel.lng+
+      "&waypoints="+only.lat+","+only.lng+
+      "&mode=transit";
+  }
+  var origin = hotel.lat+","+hotel.lng;
+  var destination = hotel.lat+","+hotel.lng;
+  var waypoints = validStops.map(function(s){ return s.lat+","+s.lng; }).join("|");
+  return base+"directions?key="+GMAPS_API_KEY+
+    "&origin="+origin+
+    "&destination="+destination+
+    "&waypoints="+encodeURIComponent(waypoints)+
+    "&mode=transit";
+}
+
+function renderPage2(){
+  var wrap = el("div","page-panel");
+  wrap.id = "panel-2";
+
+  var head = el("header","page",
+    '<span class="kicker">Step 2 · 路線規劃</span><h2>每日路線地圖</h2>' +
+    '<p>先選擇飯店方案，地圖與各段交通時間會依方案切換。點選景點可在地圖上顯示位置。</p>');
+  wrap.appendChild(head);
+
+  // hotel toggle
+  var toggle = el("div","hotel-toggle");
+  ["A","B"].forEach(function(k){
+    var h = HOTEL[k];
+    var btn = el("button","hotel-btn",
+      (k==="A"?"選項一：":"選項三：") + h.label + '<span class="sub">'+h.sub+'</span>');
+    btn.type="button";
+    btn.setAttribute("aria-pressed", String(k===currentHotel));
+    btn.onclick = function(){ currentHotel = k; currentStopId=null; renderAll(); };
+    toggle.appendChild(btn);
+  });
+  wrap.appendChild(toggle);
+
+  // day tabs
+  var daytabs = el("div","daytabs");
+  DAYS.forEach(function(day){
+    var t = el("button","daytab", day.label);
+    t.type="button";
+    t.setAttribute("aria-selected", String(day.id===currentDayId));
+    t.onclick = function(){ currentDayId = day.id; currentStopId=null; renderAll(); };
+    daytabs.appendChild(t);
+  });
+  wrap.appendChild(daytabs);
+
+  var day = null;
+  DAYS.forEach(function(d){ if(d.id===currentDayId) day = d; });
+
+  var split = el("div","route-split");
+
+  // map col
+  var mapCol = el("div","map-col");
+  var activeStop = currentStopId ? findStopById(currentStopId) : null;
+  var hotelObj = HOTEL[currentHotel];
+  var mapLabel, mapUrl;
+  var validStopCount = (day.stops||[]).filter(function(s){ return s.lat!=null; }).length;
+  if(activeStop && activeStop.lat!=null){
+    mapLabel=activeStop.mapLabel; mapUrl=activeStop.mapUrl;
+  } else if(validStopCount>0){
+    mapLabel="飯店 → "+day.title+"（全程路線）"; mapUrl=hotelObj.mapUrl;
+  } else {
+    mapLabel=hotelObj.label; mapUrl=hotelObj.mapUrl;
+  }
+  var iframe = document.createElement("iframe");
+  iframe.loading="lazy";
+  iframe.referrerPolicy="no-referrer-when-downgrade";
+  iframe.src = buildMapEmbedSrc(day, hotelObj, activeStop);
+  mapCol.appendChild(iframe);
+  var capInner = '<span>目前顯示：<strong>'+mapLabel+'</strong></span>';
+  if(activeStop && validStopCount>0){
+    capInner += '<a href="javascript:void(0)" class="show-route-link">顯示完整路線</a>';
+  }
+  capInner += '<a href="'+mapUrl+'" target="_blank" rel="noopener">在 Google 地圖 App 開啟 ↗</a>';
+  var cap = el("div","map-caption", capInner);
+  var routeLink = cap.querySelector(".show-route-link");
+  if(routeLink){
+    routeLink.onclick = function(){ currentStopId = null; renderAll(); };
+  }
+  mapCol.appendChild(cap);
+  split.appendChild(mapCol);
+
+  // info col
+  var infoCol = el("div","info-col");
+
+  var dh = el("div","day-heading",
+    '<h3>'+day.title+'</h3><div class="sub">'+day.sub+'</div>');
+  if(day.fixed){
+    var fb = el("span","fixed-badge","展覽固定行程");
+    dh.appendChild(fb);
+  }
+  infoCol.appendChild(dh);
+
+  // transit from hotel (if applicable)
+  if(day.transitFromHotel){
+    var tf = day.transitFromHotel[currentHotel];
+    var chip = el("div","transit-chip",
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>' +
+      '<span>飯店出發 → 第一站：<b>'+tf.mode+'・'+tf.time+(tf.transfer?'・'+tf.transfer:'')+'</b></span>');
+    chip.style.paddingLeft = "0";
+    infoCol.appendChild(chip);
+  }
+
+  var list = el("div","route-list");
+  day.stops.forEach(function(stop, idx){
+    var row = el("div","rstop" + (stop.id===currentStopId?" active":""));
+    row.appendChild(el("div","idx", String(idx+1)));
+    var body = el("div","rbody");
+    var row1 = el("div","rrow1",
+      '<span class="rname">'+stop.name+'</span>' + (stop.time?'<span class="rtime">'+stop.time+'</span>':''));
+    body.appendChild(row1);
+    if(stop.note) body.appendChild(el("div","rnote",stop.note));
+    if(stop.hours) body.appendChild(el("div","rhours","營業時間："+stop.hours));
+    row.appendChild(body);
+    if(stop.lat!=null){
+      row.onclick = function(){ currentStopId = stop.id; renderAll(); };
+    }
+    list.appendChild(row);
+
+    if(stop.transitIn && stop.transitIn.mode){
+      var tc = el("div","transit-chip",
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>' +
+        '<span>前往此站：<b>'+stop.transitIn.mode+(stop.transitIn.time?'・'+stop.transitIn.time:'')+(stop.transitIn.transfer?'・'+stop.transitIn.transfer:'')+'</b></span>');
+      list.appendChild(tc);
+    }
+  });
+  infoCol.appendChild(list);
+
+  if(day.transitToHotel){
+    var tt = day.transitToHotel[currentHotel];
+    var chip2 = el("div","transit-chip",
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>' +
+      '<span>最後一站 → 返回飯店：<b>'+tt.mode+'・'+tt.time+(tt.transfer?'・'+tt.transfer:'')+'</b></span>');
+    chip2.style.paddingLeft = "0";
+    infoCol.appendChild(chip2);
+  }
+
+  split.appendChild(infoCol);
+  wrap.appendChild(split);
+
+  return wrap;
+}
+
+/* ---------- PAGE 3 ---------- */
+function renderPage3(){
+  var wrap = el("div","page-panel");
+  wrap.id = "panel-3";
+
+  var head = el("header","page",
+    '<span class="kicker">Step 3 · 交通與行前準備</span><h2>交通方式總表 ＋ 行前準備清單</h2>' +
+    '<p>下表彙整各路段在選項一／選項三下的交通方式；下方為出發前建議準備事項。</p>');
+  wrap.appendChild(head);
+
+  var tableCard = el("div","card");
+  tableCard.appendChild(el("h3","","路段交通總表"));
+  tableCard.appendChild(el("div","tbl-hint","← 手機請左右滑動表格以查看完整欄位 →"));
+  var tblwrap = el("div","tblwrap");
+  var table = el("table","transit-table");
+  var thead = el("thead",null,
+    '<tr><th>路段</th><th><span class="planbadge">選項一・川崎</span></th><th><span class="planbadge">選項三・大島</span></th></tr>');
+  table.appendChild(thead);
+  var tbody = el("tbody");
+  TRANSIT_ROWS.forEach(function(r){
+    var tr = el("tr",null,
+      '<td>'+r.seg+'</td><td class="num">'+r.A+'</td><td class="num">'+r.B+'</td>');
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  tblwrap.appendChild(table);
+  tableCard.appendChild(tblwrap);
+  wrap.appendChild(tableCard);
+
+  wrap.appendChild(el("div","notebox",
+    "<strong>確定的：</strong>以上時間皆為實際查詢日間班次電車路線後所得的參考值。<strong>推測的：</strong>實際交通時間會依當天班次、尖峰壅塞、轉乘走路速度略有增減，建議抓 ±5–10 分鐘彈性。"));
+
+  wrap.appendChild(el("header","page","<h2 style=\"font-size:20px;margin-top:4px;\">行前準備清單</h2>"));
+  var prepGrid = el("div","prep-grid");
+  PREP.forEach(function(p){
+    var card = el("div","prep-card");
+    var phead = el("div","phead",
+      '<div class="prep-icon">'+p.icon+'</div><h4>'+p.title+'</h4>');
+    card.appendChild(phead);
+    var ul = el("ul","prep-list");
+    p.items.forEach(function(it){ ul.appendChild(el("li",null,"<span>"+it+"</span>")); });
+    card.appendChild(ul);
+    prepGrid.appendChild(card);
+  });
+  wrap.appendChild(prepGrid);
+
+  return wrap;
+}
+
+/* ---------- PAGE 4 ---------- */
+function renderPage4(){
+  var wrap = el("div","page-panel");
+  wrap.id = "panel-4";
+
+  var head = el("header","page",
+    '<span class="kicker">Step 4 · 展場分工（提案階段）</span><h2>3 人・3 條主線</h2>' +
+    '<p>尚未定案，僅列主軸方向與關鍵字供討論。</p>');
+  wrap.appendChild(head);
+
+  var grid = el("div","work-grid-simple");
+  WORK.forEach(function(w,i){
+    var card = el("div","person-card-simple");
+    var whoRow = el("div",null,'<div class="avatar">'+String.fromCharCode(65+i)+'</div>');
+    whoRow.style.display="flex";whoRow.style.gap="10px";whoRow.style.alignItems="center";
+    var nameWrap = el("div",null,'<div style="font-size:12px;color:var(--ink-3);">'+w.who+'</div><h4>'+w.topic+'</h4>');
+    whoRow.appendChild(nameWrap);
+    card.appendChild(whoRow);
+    var kwRow = el("div","kw-row");
+    w.kws.forEach(function(k){ kwRow.appendChild(el("span","kw",k)); });
+    card.appendChild(kwRow);
+    grid.appendChild(card);
+  });
+  wrap.appendChild(grid);
+
+  wrap.appendChild(el("div","notebox",
+    "<strong>備註：</strong>三條主線為提案階段的方向草案，尚未定案，實際分工與細項可於出發前或現場再行調整。"));
+
+  return wrap;
+}
+
+/* =========================================================
+   MAIN RENDER
+   ========================================================= */
+var PAGES = [
+  {n:1, label:"飯店比較", render:renderPage1},
+  {n:2, label:"路線規劃", render:renderPage2},
+  {n:3, label:"交通與準備", render:renderPage3},
+  {n:4, label:"分工提案", render:renderPage4}
+];
+
+function renderAll(){
+  var tabsEl = document.getElementById("pageTabs");
+  var panelsEl = document.getElementById("pagePanels");
+  tabsEl.innerHTML = "";
+  panelsEl.innerHTML = "";
+
+  PAGES.forEach(function(p){
+    var btn = el("button","pagetab",'<span class="num">'+p.n+'</span>'+p.label);
+    btn.type="button";
+    btn.setAttribute("role","tab");
+    btn.setAttribute("aria-selected", String(p.n===currentPage));
+    btn.onclick = function(){ currentPage = p.n; renderAll(); };
+    tabsEl.appendChild(btn);
+  });
+
+  PAGES.forEach(function(p){
+    var panel = p.render();
+    panel.setAttribute("data-active", String(p.n===currentPage));
+    panelsEl.appendChild(panel);
+  });
+
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+renderAll();
+
+})();
+</script>
+</body>
+</html>
