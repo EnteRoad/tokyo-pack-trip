@@ -372,7 +372,7 @@ var DAYS = [
     mapRoute:{from:"羽田空港第3ターミナル", to:"hotel", label:"羽田機場第 3 航廈 → 飯店"},
     stops:[
       {id:"flightIn", name:"台北松山 → 東京羽田（BR192）", note:"長榮航空・經濟艙。台灣端機場專車由 Amber 安排，接送時間前一天（10/12）提供", hours:"", time:"07:20–11:30", lat:null, lng:null, mapUrl:"", mapLabel:""},
-      {id:"toHotel", name:"羽田機場 → 飯店 Check-in", note:"入境＋領行李預留約 60–90 分（建議值）。入住 15:00 起，提早抵達可先詢問櫃檯寄放行李（待確認）；車程見左側地圖的 Google 即時試算", hours:"", time:"午後", lat:null, lng:null, mapUrl:"", mapLabel:""}
+      {id:"toHotel", name:"羽田機場 → 飯店 Check-in", note:"入境＋領行李預留約 60–90 分（建議值）。入住 15:00 起，提早抵達可先詢問櫃檯寄放行李（待確認）；車程約 1 小時（Google 地圖當下試算 58–63 分）", hours:"", time:"午後", lat:null, lng:null, mapUrl:"", mapLabel:""}
     ]
   },
   {
@@ -415,7 +415,7 @@ var DAYS = [
     id:"d1017", label:"10/17", title:"回程日", sub:"13:20 自羽田第 2 航廈起飛（BR2177）；上午退房前往機場，不強排景點", fixed:false,
     mapRoute:{from:"hotel", to:"羽田空港第2ターミナル", label:"飯店 → 羽田機場第 2 航廈"},
     stops:[
-      {id:"checkout", name:"退房・前往羽田機場第 2 航廈", note:"10:00 前退房。BR2177 由 ANA 營運、在第 2 航廈（不是去程的第 3 航廈）。建議 11:20 前抵達機場（起飛前 2 小時，建議值）；車程見左側地圖的 Google 即時試算", hours:"", time:"10:00 前", lat:null, lng:null, mapUrl:"", mapLabel:""},
+      {id:"checkout", name:"退房・前往羽田機場第 2 航廈", note:"10:00 前退房。BR2177 由 ANA 營運、在第 2 航廈（不是去程的第 3 航廈）。建議 11:20 前抵達機場（起飛前 2 小時，建議值）；車程約 46–63 分（Google 地圖當下試算）", hours:"", time:"10:00 前", lat:null, lng:null, mapUrl:"", mapLabel:""},
       {id:"flightOut", name:"東京羽田 → 台北松山（BR2177）", note:"ANA 營運・經濟艙；日本時間 13:20 起飛，台灣時間 15:50 抵達松山", hours:"", time:"13:20–15:50", lat:null, lng:null, mapUrl:"", mapLabel:""}
     ]
   }
@@ -429,7 +429,7 @@ var GMAPS_API_KEY = "AIzaSyBoB1QkfGlrZDjG6kpoycoMaqeXcj1t6Xg";
    PAGE 3 DATA — 交通總表 + 行前準備
    ========================================================= */
 var TRANSIT_ROWS = [
-  {seg:"羽田機場第 3 航廈 → 飯店（10/13）", t:"見路線地圖（Google 即時試算），時間待查"},
+  {seg:"羽田機場第 3 航廈 → 飯店（10/13）", t:"約 58–63 分（Google 地圖當下試算，依時段而異；見路線地圖）"},
   {seg:"飯店 → Big Sight（10/14、10/15、10/16 往返展場）", t:"31 分・直達巴士・0 轉乘"},
   {seg:"Big Sight → 築地場外市場", t:"約 20 分・1 次轉乘（電車，りんかい線＋有樂町線）"},
   {seg:"築地場外市場 → 無印良品銀座旗艦店", t:"約 11 分・步行"},
@@ -440,7 +440,7 @@ var TRANSIT_ROWS = [
   {seg:"IKEA 澀谷 → Kohnan 深川店", t:"約 33 分・1 次轉乘（東西線）"},
   {seg:"IKEA 澀谷 → LABI 大井町", t:"最快 10 分・0 轉乘"},
   {seg:"Kohnan 深川 → 飯店（10/16 晚上）", t:"約 23–36 分・1–2 次轉乘"},
-  {seg:"飯店 → 羽田機場第 2 航廈（10/17）", t:"見路線地圖（Google 即時試算），時間待查"}
+  {seg:"飯店 → 羽田機場第 2 航廈（10/17）", t:"約 46–63 分（Google 地圖當下試算，依時段而異；見路線地圖）"}
 ];
 
 var PREP = [
