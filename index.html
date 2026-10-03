@@ -405,7 +405,7 @@ var DAYS = [
         transitIn:{mode:"步行或電車1站", time:"約 5–25 分", transfer:"步行可達，不一定需搭車"}},
       {id:"kohnan", name:"Kohnan 好安（江東深川店・示意）", note:"依當天路線選最順路的分店即可", hours:"依分店而異", time:"下午", lat:35.6778287, lng:139.795726, mapUrl:"https://maps.google.com/?cid=12804302289036793592", mapLabel:"Kohnan 江東深川店（示意）",
         transitIn:{mode:"電車：東西線（木場↔日本橋轉乘銀座線）", time:"約 33 分", transfer:"1 次轉乘"}},
-      {id:"labi", name:"Yamada Denki LABI 大井町店", note:"大型家電賣場，近大井町站", hours:"約 10:00–21:00", time:"下午／傍晚", lat:35.6060802, lng:139.7356064, mapUrl:"https://maps.google.com/?cid=4930671332272247689", mapLabel:"Yamada Denki LABI 大井町店",
+      {id:"labi", from:"ikea", name:"Yamada Denki LABI 大井町店", note:"大型家電賣場，近大井町站", hours:"約 10:00–21:00", time:"下午／傍晚", lat:35.6060802, lng:139.7356064, mapUrl:"https://maps.google.com/?cid=4930671332272247689", mapLabel:"Yamada Denki LABI 大井町店",
         transitIn:{mode:"電車：JR埼京線直通りんかい線（自澀谷）", time:"最快 10 分", transfer:"0 轉乘"}}
     ],
     transitFromHotel:{mode:"電車：飯店→表參道", time:"約 34 分", transfer:"1 次轉乘"},
@@ -652,14 +652,33 @@ function findStopById(id){
   return null;
 }
 
+// transit 模式搭配 waypoints 實測不會畫出路線（只有圖釘），所以每次只查「上一站 → 這一站」一段。
+// 起點：stop.from 指定的站 → 當天前一個有座標的站 → 飯店。
+function legOrigin(day, stop, hotel){
+  if(stop.from){
+    var f = findStopById(stop.from);
+    if(f && f.lat!=null) return {lat:f.lat, lng:f.lng, label:f.mapLabel};
+  }
+  var prev = null;
+  for(var i=0;i<day.stops.length;i++){
+    if(day.stops[i].id===stop.id) break;
+    if(day.stops[i].lat!=null) prev = day.stops[i];
+  }
+  return prev ? {lat:prev.lat, lng:prev.lng, label:prev.mapLabel} : {lat:hotel.lat, lng:hotel.lng, label:hotel.label};
+}
+
 // 建立 Google Maps Embed API 的 iframe 網址。
-// - 有 activeStop：聚焦單一景點（place 模式）
-// - 無 activeStop 且當天有 >=1 個有座標的停留站：畫出「飯店 → 各站依序 → 飯店」的完整路線（directions 模式）
-// - day.mapRoute（抵達日／回程日：機場⇄飯店）：畫單程路線；其餘沒有座標的日子退回顯示飯店位置（place 模式）
-function buildMapEmbedSrc(day, hotel, activeStop){
+// - stop（有座標的景點）：畫「上一站 → 該站」的電車路線
+// - day.mapRoute（抵達日／回程日：機場⇄飯店）：畫單程路線
+// - 其餘：顯示飯店位置（place 模式）
+function buildMapEmbedSrc(day, hotel, stop){
   var base = "https://www.google.com/maps/embed/v1/";
-  if(activeStop && activeStop.lat!=null){
-    return base+"place?key="+GMAPS_API_KEY+"&q="+activeStop.lat+","+activeStop.lng+"&zoom=16";
+  if(stop){
+    var o = legOrigin(day, stop, hotel);
+    return base+"directions?key="+GMAPS_API_KEY+
+      "&origin="+o.lat+","+o.lng+
+      "&destination="+stop.lat+","+stop.lng+
+      "&mode=transit";
   }
   if(day.mapRoute){
     var hp = hotel.lat+","+hotel.lng;
@@ -670,27 +689,7 @@ function buildMapEmbedSrc(day, hotel, activeStop){
       "&destination="+encodeURIComponent(rTo)+
       "&mode=transit";
   }
-  var validStops = (day.stops||[]).filter(function(s){ return s.lat!=null; });
-  if(validStops.length===0){
-    return base+"place?key="+GMAPS_API_KEY+"&q="+hotel.lat+","+hotel.lng+"&zoom=15";
-  }
-  if(validStops.length===1){
-    // 只有一站：畫「飯店 → 該站 → 飯店」來回路線
-    var only = validStops[0];
-    return base+"directions?key="+GMAPS_API_KEY+
-      "&origin="+hotel.lat+","+hotel.lng+
-      "&destination="+hotel.lat+","+hotel.lng+
-      "&waypoints="+only.lat+","+only.lng+
-      "&mode=transit";
-  }
-  var origin = hotel.lat+","+hotel.lng;
-  var destination = hotel.lat+","+hotel.lng;
-  var waypoints = validStops.map(function(s){ return s.lat+","+s.lng; }).join("|");
-  return base+"directions?key="+GMAPS_API_KEY+
-    "&origin="+origin+
-    "&destination="+destination+
-    "&waypoints="+encodeURIComponent(waypoints)+
-    "&mode=transit";
+  return base+"place?key="+GMAPS_API_KEY+"&q="+hotel.lat+","+hotel.lng+"&zoom=15";
 }
 
 function renderRoute(){
@@ -699,7 +698,7 @@ function renderRoute(){
 
   var head = el("header","page",
     '<span class="kicker">Step 3 · 路線規劃</span><h2>每日路線地圖</h2>' +
-    '<p>以已確定的住宿為出發／返回點。點選景點可在地圖上顯示位置。</p>');
+    '<p>以已確定的住宿為出發點。地圖顯示「上一站 → 這一站」的電車路線，點選景點可切換各段。</p>');
   wrap.appendChild(head);
 
   wrap.appendChild(el("div","hotel-banner",
@@ -724,37 +723,34 @@ function renderRoute(){
   // map col
   var mapCol = el("div","map-col");
   var activeStop = currentStopId ? findStopById(currentStopId) : null;
+  if(activeStop && activeStop.lat==null) activeStop = null;
+  if(!activeStop && !day.mapRoute){
+    activeStop = (day.stops||[]).filter(function(s){ return s.lat!=null; })[0] || null;
+  }
   var hotelObj = HOTEL;
   var mapLabel, mapUrl;
-  var validStopCount = (day.stops||[]).filter(function(s){ return s.lat!=null; }).length;
-  if(activeStop && activeStop.lat!=null){
-    mapLabel=activeStop.mapLabel; mapUrl=activeStop.mapUrl;
+  if(activeStop){
+    var lo = legOrigin(day, activeStop, hotelObj);
+    mapLabel=lo.label+" → "+activeStop.mapLabel;
+    mapUrl="https://www.google.com/maps/dir/?api=1&origin="+lo.lat+","+lo.lng+
+      "&destination="+activeStop.lat+","+activeStop.lng+"&travelmode=transit";
   } else if(day.mapRoute){
     var hpt = hotelObj.lat+","+hotelObj.lng;
     mapLabel=day.mapRoute.label;
     mapUrl="https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(day.mapRoute.from==="hotel"?hpt:day.mapRoute.from)+
       "&destination="+encodeURIComponent(day.mapRoute.to==="hotel"?hpt:day.mapRoute.to)+"&travelmode=transit";
-  } else if(validStopCount>0){
-    mapLabel="飯店 → "+day.title+"（全程路線）"; mapUrl=hotelObj.mapUrl;
   } else {
     mapLabel=hotelObj.label; mapUrl=hotelObj.mapUrl;
   }
   var iframe = document.createElement("iframe");
   iframe.loading="lazy";
+  iframe.title="路線地圖";
   iframe.referrerPolicy="no-referrer-when-downgrade";
   iframe.src = buildMapEmbedSrc(day, hotelObj, activeStop);
   mapCol.appendChild(iframe);
   var capInner = '<span>目前顯示：<strong>'+mapLabel+'</strong></span>';
-  if(activeStop && validStopCount>0){
-    capInner += '<a href="javascript:void(0)" class="show-route-link">顯示完整路線</a>';
-  }
   capInner += '<a href="'+mapUrl+'" target="_blank" rel="noopener">在 Google 地圖 App 開啟 ↗</a>';
-  var cap = el("div","map-caption", capInner);
-  var routeLink = cap.querySelector(".show-route-link");
-  if(routeLink){
-    routeLink.onclick = function(){ currentStopId = null; renderAll(); };
-  }
-  mapCol.appendChild(cap);
+  mapCol.appendChild(el("div","map-caption", capInner));
   split.appendChild(mapCol);
 
   // info col
@@ -780,7 +776,7 @@ function renderRoute(){
 
   var list = el("div","route-list");
   day.stops.forEach(function(stop, idx){
-    var row = el("div","rstop" + (stop.id===currentStopId?" active":""));
+    var row = el("div","rstop" + (activeStop && stop.id===activeStop.id ? " active":""));
     row.appendChild(el("div","idx", String(idx+1)));
     var body = el("div","rbody");
     var row1 = el("div","rrow1",
