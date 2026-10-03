@@ -298,7 +298,7 @@ var STAY = {
   name:"APA飯店 - 東京大島",
   alt:"APA Hotel Tokyo Ojima ／ アパホテル〈東京大島〉",
   area:"江東區 · 住吉站／西大島站 步行約 5–8 分",
-  tags:[["前往 Big Sight 最快","good"],["無早餐","bad"],["比價時可免費取消","good"]],
+  tags:[["有直達 Big Sight 的巴士","good"],["無早餐","bad"],["比價時可免費取消","good"]],
   rows:[
     {k:"入住時間", v:"10/13（二）　15:00 起", s:"BR192 於 11:30 抵達羽田，預計早於入住時間，見下方提醒"},
     {k:"退房時間", v:"10/17（六）　10:00 前", s:"回程 BR2177 於 13:20 起飛，退房後直接前往羽田機場"},
@@ -312,8 +312,7 @@ var STAY = {
     {k:"早餐", v:"無早餐方案", s:"Agoda 上沒有附早餐／加購選項；館內有義式餐廳，是否供應早餐待確認"}
   ],
   pros:[
-    "<strong>前往 Big Sight 最快</strong>：直達巴士約 31 分、0 轉乘（比價三間中最快；川崎方向需 41–58 分＋1–2 次轉乘）",
-    "<strong>往返市區也快</strong>：10/16 市區行程（表參道／澀谷／深川）往返比川崎方向快約 15–20 分（比價時估算）",
+    "<strong>有直達 Big Sight 的巴士</strong>：Google 地圖目前試算約 44 分（電車方案約 61 分）；比價時記錄為 31 分，兩者落差見下方「要注意」",
     "<strong>3 間單人房皆可訂</strong>（比價時確認），每人一房",
     "<strong>客房 2025 年 8 月整修</strong>（訂房網站資訊）"
   ],
@@ -321,7 +320,8 @@ var STAY = {
     "<strong>沒有早餐方案</strong>：早餐需自理（便利商店／咖啡店），或向飯店確認館內餐廳是否供應",
     "<strong>周邊偏生活圈</strong>：晚上店家選擇比川崎、武藏小杉少（比價時觀察）",
     "<strong>評價 7.8</strong>（Agoda，比價當時）",
-    "<strong>搭車別搞錯站</strong>：最近的是住吉／西大島，不是大島站"
+    "<strong>搭車別搞錯站</strong>：最近的是住吉／西大島，不是大島站",
+    "<strong>車程比先前記錄的長</strong>：先前的時間疑似從「大島站」量起，沒算飯店走到車站；Google 目前試算飯店→Big Sight 約 44 分（記錄 31）、飯店→表參道約 43–52 分（記錄 34）。展覽日請抓更寬裕的時間"
   ]
 };
 
@@ -380,7 +380,7 @@ var DAYS = [
     stops:[
       {id:"expo1", name:"TOKYO PACK 2026 — Tokyo Big Sight 東展館", note:"預估全天約 8 小時看展", hours:"每日 10:00–17:00", time:"10:00–17:00", lat:35.6316964, lng:139.797634, mapUrl:"https://maps.google.com/?cid=5565232454649693191", mapLabel:"Tokyo Big Sight 東展館"}
     ],
-    transitFromHotel:{mode:"直達巴士", time:"約 31 分", transfer:"0 轉乘"}
+    transitFromHotel:{mode:"巴士（Google 另有電車方案約 61 分）", time:"約 44 分（Google 地圖目前試算；先前查詢為 31 分，依時段而異）", transfer:""}
   },
   {
     id:"d1015", label:"10/15", title:"展覽第 2 天（半天）＋市區行程", sub:"上午展覽，下午轉往築地／銀座", fixed:false,
@@ -393,7 +393,7 @@ var DAYS = [
       {id:"2121", name:"21_21 DESIGN SIGHT", note:"現正展出「方丈記に学ぶ」特展；週二休館", hours:"10:00–19:00，週二休", time:"傍晚", lat:35.6675248, lng:139.7305214, mapUrl:"https://maps.google.com/?cid=18351375368394313434", mapLabel:"21_21 DESIGN SIGHT",
         transitIn:{mode:"電車：日比谷線至六本木站，步行5分", time:"約 15 分", transfer:"0 轉乘＋步行5分"}}
     ],
-    transitFromHotel:{mode:"直達巴士", time:"約 31 分", transfer:"0 轉乘（往 Big Sight）"},
+    transitFromHotel:{mode:"巴士（往 Big Sight）", time:"約 44 分（Google 地圖目前試算；先前查詢為 31 分，依時段而異）", transfer:""},
     transitToHotel:{mode:"電車：銀座→飯店", time:"約 26–37 分", transfer:"1 次轉乘"}
   },
   {
@@ -408,7 +408,7 @@ var DAYS = [
       {id:"labi", from:"ikea", name:"Yamada Denki LABI 大井町店", note:"大型家電賣場，近大井町站", hours:"約 10:00–21:00", time:"下午／傍晚", lat:35.6060802, lng:139.7356064, mapUrl:"https://maps.google.com/?cid=4930671332272247689", mapLabel:"Yamada Denki LABI 大井町店",
         transitIn:{mode:"電車：JR埼京線直通りんかい線（自澀谷）", time:"最快 10 分", transfer:"0 轉乘"}}
     ],
-    transitFromHotel:{mode:"電車：飯店→表參道", time:"約 34 分", transfer:"1 次轉乘"},
+    transitFromHotel:{mode:"電車：飯店→表參道", time:"約 43–52 分（Google 地圖目前試算，含步行到住吉站；先前查詢為 34 分）", transfer:""},
     transitToHotel:{mode:"電車：木場→飯店", time:"約 23–36 分", transfer:"1–2 次轉乘"}
   },
   {
@@ -430,12 +430,12 @@ var GMAPS_API_KEY = "AIzaSyBoB1QkfGlrZDjG6kpoycoMaqeXcj1t6Xg";
    ========================================================= */
 var TRANSIT_ROWS = [
   {seg:"羽田機場第 3 航廈 → 飯店（10/13）", t:"約 58–63 分（Google 地圖當下試算，依時段而異；見路線地圖）"},
-  {seg:"飯店 → Big Sight（10/14、10/15、10/16 往返展場）", t:"31 分・直達巴士・0 轉乘"},
+  {seg:"飯店 → Big Sight（10/14、10/15 往返展場）", t:"約 44 分・巴士（Google 地圖目前試算；先前查詢 31 分，電車方案約 61 分）"},
   {seg:"Big Sight → 築地場外市場", t:"約 20 分・1 次轉乘（電車，りんかい線＋有樂町線）"},
   {seg:"築地場外市場 → 無印良品銀座旗艦店", t:"約 11 分・步行"},
   {seg:"銀座 → 21_21 DESIGN SIGHT", t:"約 15 分・電車 10 分＋步行 5 分"},
   {seg:"銀座 → 飯店（10/15 晚上）", t:"約 26–37 分・1 次轉乘"},
-  {seg:"飯店 → 表參道 HAY TOKYO（10/16）", t:"約 34 分・1 次轉乘"},
+  {seg:"飯店 → 表參道 HAY TOKYO（10/16）", t:"約 43–52 分（Google 地圖目前試算；先前查詢 34 分）"},
   {seg:"HAY TOKYO → IKEA 澀谷店", t:"步行或電車1站，約 5–25 分"},
   {seg:"IKEA 澀谷 → Kohnan 深川店", t:"約 33 分・1 次轉乘（東西線）"},
   {seg:"IKEA 澀谷 → LABI 大井町", t:"最快 10 分・0 轉乘"},
@@ -844,8 +844,8 @@ function renderTransit(){
   wrap.appendChild(tableCard);
 
   wrap.appendChild(el("div","notebox",
-    "<strong>確定的：</strong>以上時間皆為實際查詢日間班次電車路線後所得的參考值。<strong>推測的：</strong>實際交通時間會依當天班次、尖峰壅塞、轉乘走路速度略有增減，建議抓 ±5–10 分鐘彈性。" +
-    "<strong>待重驗：</strong>由飯店出發／返回的幾段是先前查詢值，當時起點標記為「大島」，而飯店最近站其實是住吉／西大島；出發前建議用 Google 地圖以飯店為起點再試算一次。"));
+    "<strong>來源：</strong>多數時間為先前查詢日間班次電車路線所得的參考值，標註「Google 地圖目前試算」的是本次重驗。<strong>推測的：</strong>實際交通時間會依當天班次、尖峰壅塞、轉乘走路速度略有增減，建議抓 ±5–10 分鐘彈性。" +
+    "<strong>已重驗（Google 地圖，查詢當下）：</strong>飯店→Big Sight 約 44 分（原記錄 31）、飯店→表參道約 43–52 分（原記錄 34）、羽田⇄飯店約 46–63 分，已更新上表。<strong>尚未重驗：</strong>「銀座→飯店」「木場→飯店」兩段仍是先前記錄，原本疑似從「大島站」量起，實際可能多 10 分鐘左右；出發前請用 Google 地圖以飯店為起點再試算一次。"));
 
   wrap.appendChild(el("header","page","<h2 style=\"font-size:20px;margin-top:4px;\">行前準備清單</h2>"));
   var prepGrid = el("div","prep-grid");
